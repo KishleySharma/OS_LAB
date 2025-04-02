@@ -1,0 +1,62 @@
+#include <stdio.h>
+
+int mutex = 1; // Initialize mutex to 1 (available)
+int full = 0;  // Initially, the buffer is empty
+int empty = 5; // Buffer size is 5, initially all slots are empty
+int x = 0;     // Item counter
+
+void wait() {
+    --mutex;
+}
+
+void signal() {
+    ++mutex;
+}
+
+void producer() {
+    wait();
+    ++full;
+    --empty;
+    x++;
+    printf("Producer has produced: Item %d\n", x);
+    signal();
+}
+
+void consumer() {
+    wait();
+    if (full > 0) {
+        --full;
+        ++empty;
+        printf("Consumer has consumed: Item %d\n", x);
+        x--;
+    } else {
+        printf("Buffer is empty!\n");
+    }
+    signal();
+}
+
+int main() {
+    int choice;
+
+    do {
+        printf("Enter 1.Producer 2.Consumer 3.Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                producer();
+                break;
+            case 2:
+                consumer();
+                break;
+            case 3:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
